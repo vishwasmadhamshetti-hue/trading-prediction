@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Trade Engine Pro</title>
+    <!-- Premium Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <!-- Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header & Search -->
+        <header class="top-bar">
+            <div class="logo">
+                <span class="logo-icon">▲</span>
+                <h1>AI Trade Engine <span class="badge">PRO</span></h1>
+            </div>
+            <div class="search-wrapper">
+                <div class="search-filters">
+                    <select id="assetType" class="filter-select">
+                        <option value="all">All Assets</option>
+                        <option value="crypto">Crypto</option>
+                        <option value="stocks">Stocks</option>
+                    </select>
+                    <select id="countrySelect" class="filter-select">
+                        <option value="all">Global</option>
+                        <option value="us">US Markets</option>
+                        <option value="in">Indian Markets</option>
+                    </select>
+                </div>
+                <div class="search-input-container">
+                    <input type="text" id="tickerInput" placeholder="Enter Symbol or Company (e.g. Bitcoin, Reliance)" autocomplete="off">
+                    <button id="searchBtn">Analyze</button>
+                    <ul id="searchSuggestions" class="suggestions-dropdown hidden"></ul>
+                </div>
+            </div>
+            <div class="status-indicator">
+                <div class="pulse-dot" id="connectionDot"></div>
+                <span id="connectionText">Waiting...</span>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Dashboard (Hidden until search) -->
+        <main id="dashboard" class="dashboard-grid hidden">
+            
+            <!-- Target Summary Group -->
+            <section class="summary-group">
+                <div class="card metric-card price-card">
+                    <h2>Current Price (<span class="ticker-display">---</span>)</h2>
+                    <div class="price-value" id="currentPrice">---</div>
+                </div>
+
+                <div class="card metric-card signal-card" id="signalContainer">
+                    <h2>AI Signal Target</h2>
+                    <div class="signal-value" id="aiSignal">---</div>
+                </div>
+
+                <div class="card metric-card confidence-card">
+                    <h2>AI Confidence</h2>
+                    <div class="confidence-circle">
+                        <svg viewBox="0 0 36 36" class="circular-chart">
+                            <path class="circle-bg"
+                            d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                            <path class="circle" id="confidencePath"
+                            stroke-dasharray="0, 100"
+                            d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                            <text x="18" y="20.35" class="percentage" id="confidenceValue">0%</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="card metric-card risk-card">
+                    <h2>Risk Level</h2>
+                    <div class="risk-value" id="riskLevel">---</div>
+                </div>
+            </section>
+
+            <!-- Chart Section -->
+            <section class="chart-section card">
+                <div class="card-header">
+                    <h2>Live Price Action (1M)</h2>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="priceChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Deep Analysis / Reasons Section -->
+            <section class="analysis-section card">
+                <div class="card-header">
+                    <h2>Deep Analysis Summary</h2>
+                    <span class="subtitle">Prioritized strictly by technical impact</span>
+                </div>
+                <div class="reasons-list">
+                    <ul id="reasonsUl">
+                        <li class="empty-state">Waiting for engine to analyze data stream...</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state hidden">
+            <div class="spinner"></div>
+            <p>Initializing neural engine for <span id="loadingTicker"></span>...</p>
+        </div>
+
+        <footer>
+            <p><strong>SEBI/Regulatory Disclaimer:</strong> This application provides real-time market analysis for educational purposes only. It is not financial advice. Algorithms can be wrong. Users should execute their own comprehensive research before making real trades.</p>
+        </footer>
+    </div>
+
+    <!-- Main Logic -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
